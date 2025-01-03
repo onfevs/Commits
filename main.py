@@ -33,4 +33,4 @@ def makeCommits(days: int, start_date: str):
         makeCommits(days - 1, start_date)
 
 # Llama a la función con los días y la fecha inicial
-makeCommits(45, '2024-10-13')
+makeCommits(30, '2024-12-29')
