@@ -1,36 +1,50 @@
 import os
+import random
 from datetime import datetime, timedelta
 
-def makeCommits(days: int, start_date: str):
+def makeCommitsRandomly(start_date: str, end_date: str, max_commits_per_day: int):
     """
-    Crea commits retroactivos desde una fecha específica en sistemas Windows.
-    
-    :param days: Número de días hacia atrás para los commits.
-    :param start_date: Fecha inicial en formato 'YYYY-MM-DD'.
-    """
-    if days < 1:
-        os.system('git push')
-    else:
-        # Convertimos la fecha inicial a un objeto datetime
-        current_date = datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=days - 1)
-        formatted_date = current_date.strftime('%Y-%m-%d %H:%M:%S')
-        
-        # Escribimos en el archivo
-        with open('data.txt', 'a') as file:
-            file.write(f'{formatted_date} <- this was the commit for the day!!\n')
-        
-        # Agregamos el archivo al índice
-        os.system('git add data.txt')
-        
-        # Usamos `set` para definir las variables de entorno antes del commit
-        os.system(
-            f'set GIT_AUTHOR_DATE="{formatted_date}" && '
-            f'set GIT_COMMITTER_DATE="{formatted_date}" && '
-            f'git commit -m "Commit for {formatted_date}"'
-        )
-        
-        # Recursión
-        makeCommits(days - 1, start_date)
+    Crea commits aleatorios en un rango de fechas especificado.
 
-# Llama a la función con los días y la fecha inicial
-makeCommits(30, '2024-12-29')
+    :param start_date: Fecha inicial en formato 'YYYY-MM-DD'.
+    :param end_date: Fecha final en formato 'YYYY-MM-DD'.
+    :param max_commits_per_day: Máximo número de commits por día.
+    """
+    # Convertir fechas de entrada a objetos datetime
+    start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+    end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
+    delta_days = (end_date_obj - start_date_obj).days
+
+    # Generar commits para cada día en el rango
+    for i in range(delta_days + 1):
+        current_date = start_date_obj + timedelta(days=i)
+        formatted_date = current_date.strftime('%Y-%m-%d %H:%M:%S')
+
+        # Número aleatorio de commits para el día
+        commits_today = random.randint(1, max_commits_per_day)
+        print(f"Generating {commits_today} commits for {formatted_date.split(' ')[0]}")
+
+        for _ in range(commits_today):
+            # Generar una hora aleatoria dentro del día
+            random_time = datetime.combine(current_date.date(), datetime.min.time()) + timedelta(
+                seconds=random.randint(0, 86400)
+            )
+            random_formatted_date = random_time.strftime('%Y-%m-%d %H:%M:%S')
+
+            # Escribir en el archivo
+            with open('data.txt', 'a') as file:
+                file.write(f'{random_formatted_date} <- this was a random commit!!\n')
+
+            # Agregar y commitear con la fecha aleatoria
+            os.system('git add data.txt')
+            os.system(
+                f'set GIT_AUTHOR_DATE="{random_formatted_date}" && '
+                f'set GIT_COMMITTER_DATE="{random_formatted_date}" && '
+                f'git commit -m "Random commit for {random_formatted_date}"'
+            )
+
+    # Hacer push al repositorio
+    os.system('git push')
+
+# Llama a la función con el rango de fechas y el máximo de commits por día
+makeCommitsRandomly('2024-06-20', '2024-12-31', 13)
