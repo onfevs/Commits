@@ -47,4 +47,4 @@ def makeCommitsRandomly(start_date: str, end_date: str, max_commits_per_day: int
     os.system('git push')
 
 # Llama a la función con el rango de fechas y el máximo de commits por día
-makeCommitsRandomly('2025-01-04', '2025-01-04', 9)
+makeCommitsRandomly('2025-01-01', '2025-01-08', 12)
